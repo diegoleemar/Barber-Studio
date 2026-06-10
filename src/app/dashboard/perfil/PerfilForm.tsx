@@ -1,21 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, Save, Link as LinkIcon } from 'lucide-react';
+import { Camera, Save, Link as LinkIcon, Copy, Check, ExternalLink } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { Barber } from '@/lib/types';
 import PageHeader from '@/components/ui/PageHeader';
 import { toast } from '@/components/ui/Toast';
+import { slugify } from '@/lib/time';
 
 export default function PerfilForm({ barber }: { barber: Barber }) {
   const router = useRouter();
   const [nombre, setNombre] = useState(barber.nombre);
+  const [username, setUsername] = useState(barber.username);
   const [descripcion, setDescripcion] = useState(barber.descripcion || '');
   const [intervalo, setIntervalo] = useState<30 | 45 | 60>(barber.intervalo_minutos);
   const [fotoUrl, setFotoUrl] = useState(barber.foto_url || '');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setLinkUrl(`${window.location.origin}/${barber.username}`);
+  }, [barber.username]);
+
+  useEffect(() => {
+    if (!username || username === barber.username) { setUsernameAvailable(null); return; }
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from('barbers').select('id').eq('username', username).maybeSingle();
+      if (!cancelled) setUsernameAvailable(!data);
+    }, 400);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [username, barber.username]);
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(linkUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* fallback no-clipboard */ }
+  };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,14 +60,22 @@ export default function PerfilForm({ barber }: { barber: Barber }) {
   };
 
   const save = async () => {
+    if (username !== barber.username && usernameAvailable !== true) {
+      toast('Ese nombre de usuario no está disponible', 'error'); return;
+    }
     setSaving(true);
     const supabase = createClient();
-    const { error } = await supabase.from('barbers').update({
+    const updates: Record<string, unknown> = {
       nombre, descripcion, intervalo_minutos: intervalo, foto_url: fotoUrl || null,
       updated_at: new Date().toISOString()
-    }).eq('id', barber.id);
+    };
+    if (username !== barber.username && usernameAvailable === true) {
+      updates.username = username;
+    }
+    const { error } = await supabase.from('barbers').update(updates).eq('id', barber.id);
     setSaving(false);
     if (error) { toast('Error al guardar', 'error'); return; }
+    setLinkUrl(`${window.location.origin}/${username}`);
     toast('Perfil actualizado', 'success');
     router.refresh();
   };
@@ -97,16 +133,29 @@ export default function PerfilForm({ barber }: { barber: Barber }) {
         </Field>
       </div>
 
-      <div className="mt-4 card-premium !p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <LinkIcon className="h-4 w-4 text-label-quaternary shrink-0" />
-            <div className="min-w-0">
-              <p className="text-[12px] font-medium text-label-tertiary">Tu enlace público</p>
-              <p className="text-[14px] font-medium text-brand truncate">/{barber.username}</p>
-            </div>
-          </div>
-          <span className="text-[11px] text-label-quaternary shrink-0">No editable</span>
+      <div className="mt-4 card-premium !p-5">
+        <div className="flex items-center gap-2.5 mb-3">
+          <LinkIcon className="h-4 w-4 text-brand shrink-0" />
+          <p className="text-[12px] font-medium text-label-tertiary">Tu enlace público</p>
+        </div>
+
+          <div className="flex items-center gap-2 rounded-xl border border-[#222] bg-base-900 px-3.5 py-2.5">
+          <span className="text-[13px] text-label-quaternary shrink-0 hidden sm:block">{linkUrl.split('/').slice(0, 3).join('/')}/</span>
+          <input type="text" value={username} onChange={(e) => setUsername(slugify(e.target.value))}
+            className="flex-1 bg-transparent text-[14px] text-label-primary outline-none" />
+          {usernameAvailable === true && username !== barber.username && <Check className="h-4 w-4 text-emerald-400 shrink-0" />}
+          {usernameAvailable === false && <span className="text-[11px] text-red-400 shrink-0">Ya existe</span>}
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <button onClick={copyLink}
+            className="touch-target flex items-center gap-1.5 rounded-lg bg-brand/10 px-3 py-2 text-[12px] font-medium text-brand hover:bg-brand/20 transition">
+            {copied ? <><Check className="h-3.5 w-3.5" /> Copiado</> : <><Copy className="h-3.5 w-3.5" /> Copiar enlace</>}
+          </button>
+          <a href={linkUrl} target="_blank" rel="noreferrer"
+            className="touch-target flex items-center gap-1.5 rounded-lg border border-[#333] px-3 py-2 text-[12px] font-medium text-label-tertiary hover:text-label-primary transition">
+            <ExternalLink className="h-3.5 w-3.5" /> Abrir
+          </a>
         </div>
       </div>
 

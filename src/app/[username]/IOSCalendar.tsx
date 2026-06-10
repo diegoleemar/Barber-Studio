@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DIAS_CORTOS, MESES, toDateKey } from '@/lib/time';
 
 export default function IOSCalendar({
@@ -47,29 +48,29 @@ export default function IOSCalendar({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-headline">
+        <h3 className="text-[17px] font-semibold text-label-primary">
           {MESES[cursor.getMonth()]} {cursor.getFullYear()}
         </h3>
         <div className="flex gap-1">
           <button
             onClick={() => navigate(-1)}
             disabled={!canGoBack}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ink-700 text-white transition hover:bg-ink-600 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-800 text-label-secondary transition hover:bg-base-700 hover:text-label-primary disabled:opacity-30"
             aria-label="Mes anterior"
           >
-            ‹
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => navigate(1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ink-700 text-white transition hover:bg-ink-600"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-800 text-label-secondary transition hover:bg-base-700 hover:text-label-primary"
             aria-label="Mes siguiente"
           >
-            ›
+            <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[11px] font-medium uppercase tracking-wider text-label-tertiary">
+      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-wider text-label-tertiary">
         {DIAS_CORTOS.map((d) => (
           <span key={d}>{d}</span>
         ))}
@@ -83,19 +84,20 @@ export default function IOSCalendar({
           const isSelected = value && toDateKey(d) === toDateKey(value);
           const available = isDayAvailable ? isDayAvailable(d) : true;
           const disabled = past || !available;
+
           return (
             <button
               key={i}
               disabled={disabled}
               onClick={() => onChange(d)}
-              className={`flex aspect-square items-center justify-center rounded-full text-[15px] font-medium transition ${
+              className={`touch-target-sm flex aspect-square items-center justify-center rounded-xl text-[15px] font-semibold transition-all duration-150 ${
                 isSelected
-                  ? 'bg-gold text-black'
+                  ? 'bg-brand text-white shadow-glow'
                   : isToday
-                    ? 'ring-2 ring-gold/70 text-white'
+                    ? 'bg-base-800 text-brand ring-1 ring-brand/40'
                     : disabled
-                      ? 'text-label-tertiary'
-                      : 'text-white hover:bg-ink-700'
+                      ? 'text-label-quaternary'
+                      : 'text-label-secondary hover:bg-base-800 hover:text-label-primary'
               }`}
             >
               {d.getDate()}

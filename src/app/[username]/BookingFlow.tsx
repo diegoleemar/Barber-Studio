@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import type {
   Appointment,
@@ -19,6 +20,7 @@ import {
   timeToMinutes,
   toDateKey
 } from '@/lib/time';
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Clock, Upload, Scissors } from 'lucide-react';
 import IOSCalendar from './IOSCalendar';
 import PaymentInfoCard from './PaymentInfoCard';
 
@@ -77,9 +79,7 @@ export default function BookingFlow({
       setBlocked(blk || []);
       setLoadingSlots(false);
     })();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [date, barber.id, supabase]);
 
   const availableSlots = useMemo(() => {
@@ -95,9 +95,7 @@ export default function BookingFlow({
         sch.hora_fin.slice(0, 5),
         barber.intervalo_minutos
       );
-      partial.forEach((t) => {
-        if (!slots.includes(t)) slots.push(t);
-      });
+      partial.forEach((t) => { if (!slots.includes(t)) slots.push(t); });
     });
     slots.sort();
 
@@ -109,9 +107,7 @@ export default function BookingFlow({
       const svc = services.find((s) => s.id === a.service_id);
       const dur = svc?.duracion_min || barber.intervalo_minutos;
       const start = timeToMinutes(a.hora.slice(0, 5));
-      for (let m = start; m < start + dur; m += barber.intervalo_minutos) {
-        busyMins.add(m);
-      }
+      for (let m = start; m < start + dur; m += barber.intervalo_minutos) busyMins.add(m);
     });
 
     blocked.forEach((b) => {
@@ -144,11 +140,7 @@ export default function BookingFlow({
       const { error: upErr } = await supabase.storage
         .from('comprobantes')
         .upload(path, comprobante, { cacheControl: '3600', upsert: false });
-      if (upErr) {
-        setErrorMsg('No se pudo subir el comprobante. Intenta de nuevo.');
-        setSubmitting(false);
-        return;
-      }
+      if (upErr) { setErrorMsg('No se pudo subir el comprobante. Intenta de nuevo.'); setSubmitting(false); return; }
       const { data } = supabase.storage.from('comprobantes').getPublicUrl(path);
       comprobante_url = data.publicUrl;
     }
@@ -169,114 +161,118 @@ export default function BookingFlow({
       .single();
 
     setSubmitting(false);
-    if (error || !created) {
-      setErrorMsg('No se pudo crear la reserva. Intenta de nuevo.');
-      return;
-    }
+    if (error || !created) { setErrorMsg('No se pudo crear la reserva. Intenta de nuevo.'); return; }
     setConfirmedId(created.id);
     setStep(4);
   };
 
   if (confirmedId) {
     return (
-      <Confirmation
-        barber={barber}
-        service={service}
-        date={date!}
-        time={time!}
-        onReset={() => {
-          setStep(1);
-          setDate(null);
-          setTime(null);
-          setNombre('');
-          setTelefono('');
-          setComprobante(null);
-          setConfirmedId(null);
-        }}
-      />
+      <main className="relative flex min-h-screen flex-col items-center justify-center px-5 py-12 bg-base-950">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand/10 ring-4 ring-brand/20">
+          <Check className="h-10 w-10 text-brand" />
+        </div>
+        <h1 className="text-[22px] font-bold text-label-primary text-center">¡Reserva enviada!</h1>
+        <p className="mt-3 max-w-sm text-center text-[14px] text-label-secondary leading-relaxed">
+          Tu cita está en revisión. {barber.nombre} te confirmará pronto.
+        </p>
+
+        <div className="mt-8 w-full max-w-sm rounded-2xl border border-[#222] bg-black p-5">
+          <div className="flex items-center justify-between py-2">
+            <span className="text-[13px] text-label-tertiary">Fecha</span>
+            <span className="text-[14px] font-medium text-label-primary">{formatFechaLarga(date!)}</span>
+          </div>
+          <div className="my-2 h-px bg-[#222]" />
+          <div className="flex items-center justify-between py-2">
+            <span className="text-[13px] text-label-tertiary">Hora</span>
+            <span className="text-[14px] font-semibold text-brand">{formatHora12(time!)}</span>
+          </div>
+          <div className="my-2 h-px bg-[#222]" />
+          {service && (
+            <>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-[13px] text-label-tertiary">Servicio</span>
+                <span className="text-[14px] font-medium text-label-primary">{service.nombre}</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <button onClick={() => { setStep(1); setDate(null); setTime(null); setNombre(''); setTelefono(''); setComprobante(null); setConfirmedId(null); }}
+          className="mt-8 inline-flex items-center gap-2 rounded-xl border border-[#333] px-6 py-2.5 text-[14px] font-medium text-label-secondary hover:text-label-primary transition">
+          Hacer otra reserva
+        </button>
+      </main>
     );
   }
 
   return (
-    <main className="relative min-h-screen pb-32">
+    <main className="relative min-h-screen bg-base-950 pb-32">
       {/* Header */}
-      <header className="ios-glass sticky top-0 z-20 border-b border-ink-divider">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-3">
+      <header className="sticky top-0 z-20 border-b border-[#222] bg-black/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+          <Link href="/" className="touch-target-sm -ml-1 flex h-8 w-8 items-center justify-center rounded-lg text-label-secondary hover:text-label-primary transition">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
           {barber.foto_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={barber.foto_url}
-              alt={barber.nombre}
-              className="h-10 w-10 rounded-full object-cover ring-1 ring-gold/40"
-            />
+            <img src={barber.foto_url} alt={barber.nombre} className="h-9 w-9 rounded-full object-cover ring-1 ring-brand/30" />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-700">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-base-700 text-[13px] font-semibold text-label-secondary">
               {barber.nombre.charAt(0)}
             </div>
           )}
-          <div className="min-w-0">
-            <p className="truncate text-headline">{barber.nombre}</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] font-semibold text-label-primary">{barber.nombre}</p>
             <p className="text-[12px] text-label-tertiary">Reserva tu cita</p>
           </div>
         </div>
         <StepIndicator step={step} />
       </header>
 
-      <div className="mx-auto max-w-2xl px-5 pt-6">
+      <div className="mx-auto max-w-2xl px-4 pt-6">
         {barber.descripcion && step === 1 && (
-          <p className="mb-6 text-center text-label-secondary">{barber.descripcion}</p>
+          <p className="mb-6 text-center text-[14px] text-label-secondary leading-relaxed">{barber.descripcion}</p>
         )}
 
         {/* PASO 1: Fecha y hora */}
         {step === 1 && (
           <>
-            <h2 className="text-title">Elige día y hora</h2>
-            <p className="mt-1 text-label-secondary">
-              Selecciona cuándo quieres tu cita
-            </p>
+            <h2 className="text-[20px] font-bold text-label-primary">Elige día y hora</h2>
+            <p className="mt-1 text-[14px] text-label-secondary">Selecciona cuándo quieres tu cita</p>
 
-            <div className="mt-6 ios-card-lg">
+            <div className="mt-5 rounded-2xl border border-[#222] bg-black p-4">
               <IOSCalendar
                 value={date}
-                onChange={(d) => {
-                  setDate(d);
-                  setTime(null);
-                }}
+                onChange={(d) => { setDate(d); setTime(null); }}
                 isDayAvailable={availableDayChecker}
               />
             </div>
 
             {date && (
-              <div className="mt-6">
-                <p className="text-[13px] uppercase tracking-wider text-label-secondary">
-                  {formatFechaLarga(date)}
+              <div className="mt-6 animate-fade-up">
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-label-secondary mb-3">
+                  <Clock className="h-4 w-4" /> Horarios disponibles — {formatFechaLarga(date)}
                 </p>
-                <div className="mt-3 ios-card-lg">
+                <div className="rounded-2xl border border-[#222] bg-black p-4">
                   {loadingSlots ? (
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                       {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="shimmer h-10 rounded-pill" />
+                        <div key={i} className="h-11 animate-pulse rounded-xl bg-base-800" />
                       ))}
                     </div>
                   ) : availableSlots.length === 0 ? (
-                    <p className="text-center text-footnote py-4">
-                      No hay horarios para este día
-                    </p>
+                    <p className="text-center text-[14px] text-label-tertiary py-6">No hay horarios disponibles para este día</p>
                   ) : (
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                       {availableSlots.map((s) => (
-                        <button
-                          key={s.time}
-                          disabled={!s.available}
-                          onClick={() => setTime(s.time)}
-                          className={`h-10 rounded-pill text-[14px] font-semibold transition ${
+                        <button key={s.time} disabled={!s.available} onClick={() => setTime(s.time)}
+                          className={`touch-target-sm h-11 rounded-xl text-[14px] font-semibold transition-all duration-150 ${
                             time === s.time
-                              ? 'bg-gold text-black'
+                              ? 'bg-brand text-white shadow-glow'
                               : s.available
-                                ? 'bg-ink-700 text-white hover:bg-ink-600'
-                                : 'bg-ink-800 text-label-tertiary line-through'
-                          }`}
-                        >
+                                ? 'bg-base-800 text-label-primary hover:bg-base-700'
+                                : 'bg-base-800/50 text-label-quaternary line-through cursor-not-allowed'
+                          }`}>
                           {formatHora12(s.time)}
                         </button>
                       ))}
@@ -295,73 +291,61 @@ export default function BookingFlow({
           </>
         )}
 
-        {/* PASO 2: Datos del cliente y servicio */}
+        {/* PASO 2: Datos del cliente */}
         {step === 2 && (
           <>
-            <h2 className="text-title">Tus datos</h2>
-            <p className="mt-1 text-label-secondary">Te contactaremos por este número</p>
+            <h2 className="text-[20px] font-bold text-label-primary">Tus datos</h2>
+            <p className="mt-1 text-[14px] text-label-secondary">Te contactaremos por este número</p>
 
-            <div className="mt-6 ios-card-lg space-y-4">
+            <div className="mt-5 rounded-2xl border border-[#222] bg-black p-5 space-y-4">
               <div>
-                <label className="ios-label">Nombre y apellido</label>
-                <input
-                  type="text"
-                  required
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej: Carlos Pérez"
-                  className="ios-input"
-                />
+                <label className="text-[12px] font-medium text-label-tertiary mb-1.5 block">Nombre y apellido</label>
+                <input type="text" required value={nombre} onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Ej: Carlos Pérez" className="input" />
               </div>
               <div>
-                <label className="ios-label">Teléfono / WhatsApp</label>
-                <input
-                  type="tel"
-                  required
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  placeholder="0412-1234567"
-                  className="ios-input"
-                />
+                <label className="text-[12px] font-medium text-label-tertiary mb-1.5 block">Teléfono / WhatsApp</label>
+                <input type="tel" required value={telefono} onChange={(e) => setTelefono(e.target.value)}
+                  placeholder="0412-1234567" className="input" />
               </div>
             </div>
 
-            <h3 className="mt-8 text-headline">Selecciona el servicio</h3>
+            <h3 className="mt-8 text-[17px] font-semibold text-label-primary">Selecciona el servicio</h3>
             {services.length === 0 ? (
-              <p className="mt-3 text-center text-footnote">
-                Este barbero aún no tiene servicios.
-              </p>
+              <p className="mt-3 text-center text-[14px] text-label-tertiary py-6">Este barbero aún no tiene servicios configurados.</p>
             ) : (
               <div className="mt-3 space-y-2">
                 {services.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setServiceId(s.id)}
-                    className={`flex w-full items-center justify-between rounded-ios p-4 text-left transition ${
+                  <button key={s.id} onClick={() => setServiceId(s.id)}
+                    className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all duration-150 ${
                       serviceId === s.id
-                        ? 'bg-gold/10 ring-2 ring-gold'
-                        : 'bg-ink-800 ring-2 ring-transparent hover:bg-ink-700'
-                    }`}
-                  >
-                    <div>
-                      <p className="text-headline">{s.nombre}</p>
-                      <p className="text-footnote">{s.duracion_min} min</p>
+                        ? 'border-brand/40 bg-brand/[0.03] ring-1 ring-brand/20'
+                        : 'border-[#222] bg-black hover:border-[#333]'
+                    }`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                        serviceId === s.id ? 'bg-brand/10 text-brand' : 'bg-base-800 text-label-tertiary'
+                      }`}>
+                        <Scissors className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-[15px] font-medium text-label-primary">{s.nombre}</p>
+                        <p className="text-[12px] text-label-tertiary">{s.duracion_min} min</p>
+                      </div>
                     </div>
-                    <span className="text-headline text-gold">${s.precio}</span>
+                    <span className="text-[17px] font-bold text-brand">${s.precio}</span>
                   </button>
                 ))}
               </div>
             )}
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button onClick={() => setStep(1)} className="ios-btn-secondary">
+              <button onClick={() => setStep(1)}
+                className="h-12 rounded-xl border border-[#333] text-[14px] font-medium text-label-secondary hover:text-label-primary hover:border-[#444] transition">
                 Atrás
               </button>
-              <button
-                onClick={() => setStep(3)}
-                disabled={!nombre || !telefono || !service}
-                className="ios-btn-primary disabled:opacity-50"
-              >
+              <button onClick={() => setStep(3)} disabled={!nombre || !telefono || !service}
+                className="btn-primary disabled:opacity-40 !h-12 !text-[15px]">
                 Continuar
               </button>
             </div>
@@ -371,74 +355,63 @@ export default function BookingFlow({
         {/* PASO 3: Pago */}
         {step === 3 && (
           <>
-            <h2 className="text-title">Confirma y paga</h2>
-            <p className="mt-1 text-label-secondary">
-              Usa cualquiera de los métodos disponibles
-            </p>
+            <h2 className="text-[20px] font-bold text-label-primary">Confirma y paga</h2>
+            <p className="mt-1 text-[14px] text-label-secondary">Usa cualquiera de los métodos disponibles</p>
 
-            <div className="mt-6 ios-card-lg">
-              <div className="ios-row !py-2">
-                <span className="text-footnote">Fecha</span>
-                <span className="text-body">{formatFechaLarga(date!)}</span>
+            <div className="mt-5 rounded-2xl border border-[#222] bg-black p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-label-tertiary">Fecha</span>
+                <span className="text-[15px] font-medium text-label-primary">{formatFechaLarga(date!)}</span>
               </div>
-              <div className="ios-divider" />
-              <div className="ios-row !py-2">
-                <span className="text-footnote">Hora</span>
-                <span className="text-body font-medium text-gold">{formatHora12(time!)}</span>
+              <div className="h-px bg-[#222]" />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-label-tertiary">Hora</span>
+                <span className="text-[15px] font-semibold text-brand">{formatHora12(time!)}</span>
               </div>
-              <div className="ios-divider" />
-              <div className="ios-row !py-2">
-                <span className="text-footnote">Servicio</span>
-                <span className="text-body">{service?.nombre}</span>
+              <div className="h-px bg-[#222]" />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-label-tertiary">Servicio</span>
+                <span className="text-[15px] font-medium text-label-primary">{service?.nombre}</span>
               </div>
-              <div className="ios-divider" />
-              <div className="ios-row !py-2">
-                <span className="text-footnote">Total</span>
-                <span className="text-[22px] font-bold text-gold">${service?.precio}</span>
+              <div className="h-px bg-[#222]" />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-label-tertiary">Total</span>
+                <span className="text-[22px] font-bold text-brand">${service?.precio}</span>
               </div>
             </div>
 
-            <h3 className="mt-8 text-headline">Métodos de pago</h3>
+            <h3 className="mt-8 text-[17px] font-semibold text-label-primary">Métodos de pago</h3>
             {payments.length === 0 ? (
-              <div className="mt-3 ios-card text-center text-footnote">
+              <div className="mt-3 rounded-2xl border border-[#222] bg-black p-5 text-center text-[14px] text-label-tertiary">
                 Este barbero aún no configuró métodos de pago. Contáctalo directamente.
               </div>
             ) : (
               <div className="mt-3 space-y-3">
-                {payments.map((p) => (
-                  <PaymentInfoCard key={p.id} method={p} />
-                ))}
+                {payments.map((p) => <PaymentInfoCard key={p.id} method={p} />)}
               </div>
             )}
 
-            <h3 className="mt-8 text-headline">Sube tu comprobante</h3>
-            <p className="mt-1 text-footnote">Imagen o PDF del pago realizado (opcional)</p>
-            <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-ios bg-ink-700 p-4 hover:bg-ink-600 transition">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold text-black">
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" d="M12 5v14M5 12h14" />
-                </svg>
+            <h3 className="mt-8 text-[17px] font-semibold text-label-primary">Sube tu comprobante</h3>
+            <p className="mt-1 text-[13px] text-label-tertiary">Imagen o PDF del pago (opcional)</p>
+            <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-[#333] bg-black p-4 hover:border-brand/40 transition-all">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                <Upload className="h-5 w-5" />
               </div>
-              <span className="flex-1 truncate text-body">
+              <span className="flex-1 truncate text-[14px] text-label-secondary">
                 {comprobante ? comprobante.name : 'Toca para subir'}
               </span>
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                hidden
-                onChange={(e) => setComprobante(e.target.files?.[0] || null)}
-              />
+              <input type="file" accept="image/*,application/pdf" hidden onChange={(e) => setComprobante(e.target.files?.[0] || null)} />
             </label>
 
-            {errorMsg && (
-              <p className="mt-4 text-center text-[14px] text-red-400">{errorMsg}</p>
-            )}
+            {errorMsg && <p className="mt-4 text-center text-[14px] text-red-400">{errorMsg}</p>}
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button onClick={() => setStep(2)} className="ios-btn-secondary">
+              <button onClick={() => setStep(2)}
+                className="h-12 rounded-xl border border-[#333] text-[14px] font-medium text-label-secondary hover:text-label-primary hover:border-[#444] transition">
                 Atrás
               </button>
-              <button onClick={submit} disabled={submitting} className="ios-btn-primary">
+              <button onClick={submit} disabled={submitting}
+                className="btn-primary disabled:opacity-40 !h-12 !text-[15px]">
                 {submitting ? 'Enviando…' : 'Confirmar reserva'}
               </button>
             </div>
@@ -450,88 +423,25 @@ export default function BookingFlow({
 }
 
 const StepIndicator = ({ step }: { step: Step }) => (
-  <div className="mx-auto flex max-w-2xl gap-1.5 px-5 pb-3">
+  <div className="mx-auto flex max-w-2xl gap-1.5 px-4 pb-3">
     {[1, 2, 3].map((n) => (
-      <div
-        key={n}
-        className={`h-1 flex-1 rounded-full transition-colors ${
-          n <= step ? 'bg-gold' : 'bg-ink-600'
-        }`}
-      />
+      <div key={n} className={`h-1 flex-1 rounded-full transition-colors ${
+        n <= step ? 'bg-brand' : 'bg-base-700'
+      }`} />
     ))}
   </div>
 );
 
-const StickyCTA = ({
-  label,
-  onClick,
-  disabled,
-  info
-}: {
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  info?: string;
+const StickyCTA = ({ label, onClick, disabled, info }: {
+  label: string; onClick: () => void; disabled?: boolean; info?: string;
 }) => (
-  <div className="ios-glass fixed bottom-0 left-0 right-0 z-20 border-t border-ink-divider px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-4">
+  <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#222] bg-black/80 backdrop-blur-xl px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4">
     <div className="mx-auto flex max-w-2xl flex-col gap-2">
       {info && <p className="text-center text-[12px] text-label-secondary">{info}</p>}
-      <button onClick={onClick} disabled={disabled} className="ios-btn-primary w-full disabled:opacity-50">
+      <button onClick={onClick} disabled={disabled}
+        className="btn-primary w-full disabled:opacity-40 !h-12 !text-[15px]">
         {label}
       </button>
     </div>
   </div>
 );
-
-function Confirmation({
-  barber,
-  service,
-  date,
-  time,
-  onReset
-}: {
-  barber: Barber;
-  service: Service | null;
-  date: Date;
-  time: string;
-  onReset: () => void;
-}) {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-5 py-12 text-center">
-      <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gold/15 ring-4 ring-gold/30">
-        <svg viewBox="0 0 24 24" className="h-12 w-12 text-gold" fill="none" stroke="currentColor" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-      </div>
-      <h1 className="text-title">¡Reserva enviada!</h1>
-      <p className="mt-3 max-w-sm text-label-secondary">
-        Tu cita está en revisión. {barber.nombre} confirmará en breve por WhatsApp.
-      </p>
-
-      <div className="mt-8 w-full max-w-sm ios-card-lg">
-        <div className="ios-row !py-2">
-          <span className="text-footnote">Fecha</span>
-          <span className="text-body">{formatFechaLarga(date)}</span>
-        </div>
-        <div className="ios-divider" />
-        <div className="ios-row !py-2">
-          <span className="text-footnote">Hora</span>
-          <span className="text-body text-gold">{formatHora12(time)}</span>
-        </div>
-        {service && (
-          <>
-            <div className="ios-divider" />
-            <div className="ios-row !py-2">
-              <span className="text-footnote">Servicio</span>
-              <span className="text-body">{service.nombre}</span>
-            </div>
-          </>
-        )}
-      </div>
-
-      <button onClick={onReset} className="ios-btn-ghost mt-8">
-        Hacer otra reserva
-      </button>
-    </main>
-  );
-}
