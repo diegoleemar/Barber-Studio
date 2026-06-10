@@ -39,7 +39,7 @@ export default function BottomSheet({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="relative z-10 w-full max-w-lg rounded-t-2xl border border-base-border bg-base-900 p-5 pb-[max(env(safe-area-inset-bottom),24px)] shadow-dialog sm:rounded-2xl sm:pb-6"
+            className="relative z-10 w-full max-w-lg rounded-t-2xl border border-base-border bg-base-900 p-5 pb-[max(env(safe-area-inset-bottom),80px)] shadow-dialog sm:rounded-2xl sm:pb-6"
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-base-500 sm:hidden" />
             {title && (

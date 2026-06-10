@@ -98,7 +98,7 @@
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .app-inset { padding-left: 16px; padding-right: 16px; }
-  .bottom-nav-inset { padding-bottom: max(env(safe-area-inset-bottom), 64px); }
+  .bottom-nav-inset { padding-bottom: max(env(safe-area-inset-bottom), 80px); }
   .top-nav-inset { padding-top: max(env(safe-area-inset-top), 12px); }
 
   @media (max-width: 767px) {
