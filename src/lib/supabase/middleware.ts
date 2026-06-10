@@ -26,6 +26,10 @@ export const updateSession = async (request: NextRequest) => {
     }
   );
 
-  await supabase.auth.getUser();
+  try {
+    await supabase.auth.getUser();
+  } catch {
+    /* Edge Runtime: process.version not available */
+  }
   return response;
 };
