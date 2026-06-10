@@ -123,7 +123,7 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
       />
 
       {/* Day strip */}
-      {mounted && <div className="mb-6 -mx-4 overflow-x-auto px-4 lg:-mx-8 lg:px-8">
+      {mounted && <div className="mb-5 -mx-4 overflow-x-auto px-4 no-scrollbar lg:-mx-8 lg:px-8">
         <div className="flex gap-1.5 min-w-max">
           {dayStrip.map((d) => {
             const key = toDateKey(d);
@@ -131,11 +131,11 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
             const isToday = key === todayKey;
             return (
               <motion.button key={key} whileTap={{ scale: 0.95 }} onClick={() => setSelected(d)}
-                className={`relative flex h-16 w-12 shrink-0 flex-col items-center justify-center rounded-xl text-center transition-all duration-200 ${
+                className={`touch-target-sm relative flex h-14 w-11 shrink-0 flex-col items-center justify-center rounded-xl text-center transition-all duration-200 lg:h-16 lg:w-12 ${
                   isSel ? 'bg-brand text-white shadow-sm' : isToday ? 'bg-base-800 ring-1 ring-brand/30 text-label-primary' : 'bg-base-800/50 text-label-tertiary hover:bg-base-700 hover:text-label-secondary'
                 }`}>
-                <span className={`text-[9px] font-medium uppercase tracking-wider ${isSel ? 'text-white/70' : ''}`}>{DIAS_CORTOS[d.getDay()].slice(0, 2)}</span>
-                <span className={`mt-px text-[17px] font-semibold leading-none ${isToday && !isSel ? 'text-brand' : ''}`}>{d.getDate()}</span>
+                <span className={`text-[8px] font-medium uppercase tracking-wider lg:text-[9px] ${isSel ? 'text-white/70' : ''}`}>{DIAS_CORTOS[d.getDay()].slice(0, 2)}</span>
+                <span className={`mt-px text-[15px] font-semibold leading-none lg:text-[17px] ${isToday && !isSel ? 'text-brand' : ''}`}>{d.getDate()}</span>
               </motion.button>
             );
           })}
@@ -143,7 +143,7 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
       </div>}
 
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-3 gap-3">
+      <div className="mb-5 grid grid-cols-3 gap-2 lg:gap-3">
         <StatsCard label="Total" value={counts.total} />
         <StatsCard label="Pendientes" value={counts.pending} accent />
         <StatsCard label="Confirmadas" value={counts.confirmed} confirmed />
@@ -163,21 +163,21 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
               const svc = a.service_id ? servicesMap.get(a.service_id) : null;
               return (
                 <motion.button key={a.id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                  onClick={() => setActive(a)} className="card-premium-hover w-full text-left">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                  onClick={() => setActive(a)} className="touch-target card-premium-hover w-full text-left">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl lg:h-10 lg:w-10 ${
                         a.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400' : a.status === 'cancelled' ? 'bg-red-500/10 text-red-400' : 'bg-brand/10 text-brand'
                       }`}>
                         <Clock className="h-4 w-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[15px] font-semibold text-label-primary">{formatHora12(a.hora)}</span>
-                          {view === 'week' && <span className="text-[11px] text-label-quaternary">{a.fecha.split('-').slice(1).reverse().join('/')}</span>}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[14px] font-semibold text-label-primary lg:text-[15px]">{formatHora12(a.hora)}</span>
+                          {view === 'week' && <span className="text-[10px] text-label-quaternary lg:text-[11px]">{a.fecha.split('-').slice(1).reverse().join('/')}</span>}
                         </div>
-                        <p className="mt-0.5 truncate text-[14px] font-medium text-label-primary">{a.cliente_nombre}</p>
-                        <p className="text-[12px] text-label-tertiary">{svc?.nombre || 'Sin servicio'}</p>
+                        <p className="truncate text-[13px] font-medium text-label-primary lg:text-[14px]">{a.cliente_nombre}</p>
+                        <p className="text-[11px] text-label-tertiary lg:text-[12px]">{svc?.nombre || 'Sin servicio'}</p>
                       </div>
                     </div>
                     <StatusBadge status={a.status} />
@@ -198,9 +198,9 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
 
 /* ─── Stat Card ─── */
 const StatsCard = ({ label, value, accent, confirmed }: { label: string; value: number; accent?: boolean; confirmed?: boolean }) => (
-  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card-premium">
-    <p className="text-label text-label-quaternary">{label}</p>
-    <p className={`mt-1.5 text-[28px] font-semibold tracking-tight ${accent ? 'text-brand' : confirmed ? 'text-emerald-400' : 'text-label-primary'}`}>
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card-premium !p-3 lg:!p-4">
+    <p className="text-[9px] font-medium uppercase tracking-widest text-label-quaternary lg:text-label">{label}</p>
+    <p className={`mt-1 text-[22px] font-semibold tracking-tight lg:mt-1.5 lg:text-[28px] ${accent ? 'text-brand' : confirmed ? 'text-emerald-400' : 'text-label-primary'}`}>
       {value}
     </p>
   </motion.div>
@@ -218,12 +218,12 @@ const StatusBadge = ({ status }: { status: Appointment['status'] }) => {
 
 /* ─── Empty State ─── */
 const EmptyState = () => (
-  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card-premium flex flex-col items-center py-16 text-center">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-base-700">
-      <CalendarRange className="h-6 w-6 text-label-tertiary" />
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card-premium flex flex-col items-center py-12 text-center lg:py-16">
+    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-base-700 lg:h-14 lg:w-14">
+      <CalendarRange className="h-5 w-5 text-label-tertiary lg:h-6 lg:w-6" />
     </div>
-    <h3 className="text-[16px] font-semibold text-label-primary">Sin citas</h3>
-    <p className="mt-1 max-w-xs text-[13px] text-label-tertiary">Cuando un cliente reserve, aparecerá aquí en tiempo real.</p>
+    <h3 className="text-[15px] font-semibold text-label-primary lg:text-[16px]">Sin citas</h3>
+    <p className="mt-1 max-w-[260px] text-[12px] text-label-tertiary lg:max-w-xs lg:text-[13px]">Cuando un cliente reserve, aparecerá aquí en tiempo real.</p>
   </motion.div>
 );
 

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { Barber } from '@/lib/types';
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   CalendarDays,
   User,
@@ -15,8 +15,6 @@ import {
   Copy,
   Check,
   LogOut,
-  Menu,
-  X,
   type LucideIcon
 } from 'lucide-react';
 import ToastHost from '@/components/ui/Toast';
@@ -33,7 +31,6 @@ export default function DashboardShell({ barber, children }: { barber: Barber; c
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${barber.username}`;
 
@@ -48,7 +45,7 @@ export default function DashboardShell({ barber, children }: { barber: Barber; c
 
   return (
     <div className="flex min-h-screen bg-base-950">
-      {/* ─── SIDEBAR ─── */}
+      {/* ─── SIDEBAR (desktop) ─── */}
       <aside className={`fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-base-border bg-base-900 transition-all duration-300 lg:flex ${collapsed ? 'w-[56px]' : 'w-[240px]'}`}>
         <div className={`flex items-center border-b border-base-border ${collapsed ? 'justify-center px-0 py-3' : 'justify-between px-4 py-3.5'}`}>
           <Link href="/dashboard" className="flex items-center gap-2.5">
@@ -123,68 +120,37 @@ export default function DashboardShell({ barber, children }: { barber: Barber; c
         </div>
       </aside>
 
-      {/* ─── MOBILE HEADER ─── */}
-      <header className="glass fixed left-0 right-0 top-0 z-30 flex items-center justify-between border-b border-base-border px-4 py-3 lg:hidden">
-        <div className="flex items-center gap-3">
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="btn-icon !h-8 !w-8">
-            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <img src="/logo.png" alt="" className="h-7 w-7 rounded-md object-contain" />
-            <span className="text-[14px] font-semibold">Barber Studio</span>
-          </Link>
-        </div>
-        <button onClick={copyLink} className="flex items-center gap-1.5 text-[12px] text-brand">
-          {copied ? <><Check className="h-3.5 w-3.5" /> Copiado</> : <><Copy className="h-3.5 w-3.5" /> {barber.username}</>}
-        </button>
-      </header>
-
-      {/* ─── MOBILE DRAWER ─── */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)}>
-          <div className="fixed left-0 top-0 bottom-0 w-[260px] bg-base-900 border-r border-base-border pt-16" onClick={(e) => e.stopPropagation()}>
-            <nav className="space-y-0.5 px-3">
-              {NAV.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                return (
-                  <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium transition ${
-                      active ? 'bg-glass-active text-white' : 'text-label-secondary hover:bg-glass-hover hover:text-label-primary'
-                    }`}>
-                    <Icon className={`h-[18px] w-[18px] ${active ? 'text-brand' : ''}`} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-      )}
-
       {/* ─── CONTENT ─── */}
       <main className={`flex-1 transition-all duration-300 lg:pl-[240px] ${collapsed ? 'lg:!pl-[56px]' : ''}`}>
-        <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-4 lg:px-8 lg:pt-8">
+        <div className="mx-auto w-full max-w-6xl app-inset bottom-nav-inset pt-0 lg:px-8 lg:pt-8">
           {children}
         </div>
       </main>
 
-      {/* ─── MOBILE BOTTOM NAV ─── */}
-      <nav className="glass fixed bottom-0 left-0 right-0 z-30 flex items-center justify-around border-t border-base-border px-2 pb-[max(env(safe-area-inset-bottom),8px)] pt-2 lg:hidden">
+      {/* ─── BOTTOM NAV (mobile) ─── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-start justify-around border-t border-base-border bg-base-900/95 backdrop-blur-xl safe-bottom pb-1 lg:hidden">
         {NAV.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
           return (
             <Link key={item.href} href={item.href}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-lg py-1 text-[10px] font-medium transition ${
+              className={`touch-target relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-lg pt-1.5 text-[10px] font-medium transition-all duration-150 ${
                 active ? 'text-brand' : 'text-label-tertiary'
               }`}>
-              <Icon className="h-[20px] w-[20px]" />
-              <span>{item.label}</span>
+              {active && <div className="absolute -top-px left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-brand" />}
+              <Icon className={`h-[22px] w-[22px] ${active ? 'text-brand' : ''}`} />
+              <span className="text-[10px] leading-none">{item.label}</span>
             </Link>
           );
         })}
       </nav>
+
+      {/* ─── LOGOUT FAB (mobile only) ─── */}
+      <form action="/auth/signout" method="post" className="fixed right-4 bottom-20 z-50 lg:hidden">
+        <button type="submit" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-base-800 text-label-tertiary shadow-elevated ring-1 ring-glass-border transition-all duration-150 active:scale-90 hover:text-red-400">
+          <LogOut className="h-5 w-5" />
+        </button>
+      </form>
 
       <ToastHost />
     </div>
