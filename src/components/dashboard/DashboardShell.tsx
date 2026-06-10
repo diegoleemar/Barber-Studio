@@ -122,7 +122,7 @@ export default function DashboardShell({ barber, children }: { barber: Barber; c
 
       {/* ─── CONTENT ─── */}
       <main className={`flex-1 w-full max-w-full transition-all duration-300 lg:pl-[240px] ${collapsed ? 'lg:!pl-[56px]' : ''}`}>
-        <div className="mx-auto w-full max-w-6xl app-inset bottom-nav-inset pt-0 lg:px-8 lg:pt-8">
+        <div className="mx-auto w-full max-w-6xl app-inset bottom-nav-inset top-nav-inset lg:pt-8">
           {children}
         </div>
       </main>

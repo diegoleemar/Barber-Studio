@@ -101,8 +101,17 @@ function ServiceForm({ initial, onSubmit, onDelete }: { initial: Service | null;
         <Field label="Precio (USD)">
           <input type="number" min="0" step="0.5" required value={precio} onChange={(e) => setPrecio(e.target.value)} placeholder="10" className="input" />
         </Field>
-        <Field label="Duración (min)">
-          <input type="number" min="5" step="5" required value={duracion} onChange={(e) => setDuracion(e.target.value)} className="input" />
+        <Field label="Duración">
+          <div className="grid grid-cols-3 gap-2">
+            {[30, 45, 60].map((m) => (
+              <button key={m} type="button" onClick={() => setDuracion(m.toString())}
+                className={`flex h-11 items-center justify-center rounded-lg border text-[14px] font-medium transition-all ${
+                  duracion === m.toString() ? 'border-brand bg-brand/10 text-brand' : 'border-glass-border bg-base-700 text-label-tertiary hover:bg-base-600'
+                }`}>
+                {m} min
+              </button>
+            ))}
+          </div>
         </Field>
       </div>
       <div className="card-premium !p-4">

@@ -210,7 +210,7 @@ export default function BookingFlow({
     <main className="relative min-h-screen bg-base-950 pb-32">
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-[#222] bg-black/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3 pt-[max(env(safe-area-inset-top),12px)]">
           <Link href="/" className="touch-target-sm -ml-1 flex h-8 w-8 items-center justify-center rounded-lg text-label-secondary hover:text-label-primary transition">
             <ArrowLeft className="h-4 w-4" />
           </Link>
