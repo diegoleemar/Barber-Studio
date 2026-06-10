@@ -54,7 +54,7 @@ export default function LandingClient() {
             <a href="#faq" className="btn-ghost !text-[14px]">FAQ</a>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login" className="hidden sm:inline-flex btn-ghost !h-[38px] !px-4 !text-[13px]">Iniciar sesión</Link>
+            <Link href="/login" className="inline-flex btn-ghost !h-[38px] !px-3 sm:!px-4 !text-[12px] sm:!text-[13px]">Iniciar sesión</Link>
             <Link href="/login" className="inline-flex h-[44px] sm:h-[38px] items-center justify-center gap-2 rounded-lg bg-brand px-4 sm:px-5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 active:scale-[0.97] min-w-[44px]">
               {scrolled ? 'Comenzar' : 'Comenzar'}
             </Link>

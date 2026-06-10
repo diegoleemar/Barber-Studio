@@ -34,7 +34,7 @@ export default function OnboardingForm({ defaultName, defaultPhoto }: { defaultN
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setError('Sesión inválida'); setLoading(false); return; }
-    const { error } = await supabase.from('barbers').insert({ user_id: user.id, username, nombre, foto_url: defaultPhoto, descripcion: '', intervalo_minutos: 30 });
+    const { error } = await supabase.from('barbers').insert({ user_id: user.id, username, nombre, foto_url: defaultPhoto, descripcion: '', intervalo_minutos: 30, subscription_status: 'inactive' });
     if (error) { setError(error.message); setLoading(false); return; }
     router.replace('/dashboard');
     router.refresh();

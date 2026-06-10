@@ -24,6 +24,45 @@ create table if not exists public.barbers (
 create index if not exists idx_barbers_username on public.barbers(username);
 create index if not exists idx_barbers_user_id on public.barbers(user_id);
 
+-- Subscription columns
+alter table public.barbers add column if not exists subscription_status text not null default 'inactive' check (subscription_status in ('inactive','active','expired'));
+alter table public.barbers add column if not exists subscription_plan text check (subscription_plan in ('barbero','barberia'));
+
+-- =====================================================================
+-- TABLA: payment_requests (solicitudes de pago de usuarios)
+-- =====================================================================
+create table if not exists public.payment_requests (
+  id uuid primary key default gen_random_uuid(),
+  barber_id uuid not null references public.barbers(id) on delete cascade,
+  plan text not null check (plan in ('barbero','barberia')),
+  metodo text not null check (metodo in ('pago_movil','transferencia','binancepay')),
+  monto numeric(10,2) not null,
+  referencia text,
+  comprobante_url text,
+  status text not null default 'pending' check (status in ('pending','verified','rejected')),
+  notas_admin text,
+  created_at timestamptz not null default now(),
+  verified_at timestamptz
+);
+create index if not exists idx_payment_requests_barber on public.payment_requests(barber_id);
+create index if not exists idx_payment_requests_status on public.payment_requests(status);
+
+-- =====================================================================
+-- TABLA: platform_config (datos de pago de la plataforma)
+-- =====================================================================
+create table if not exists public.platform_config (
+  id uuid primary key default gen_random_uuid(),
+  pago_movil jsonb not null default '{"banco":"","telefono":"","titular":""}'::jsonb,
+  transferencia jsonb not null default '{"banco":"","cuenta":"","titular":""}'::jsonb,
+  binancepay jsonb not null default '{"correo":"","id_usuario":""}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+-- Insert initial row if empty
+insert into public.platform_config (id, pago_movil, transferencia, binancepay)
+select gen_random_uuid(), '{"banco":"Banesco","telefono":"0412-1234567","titular":"Barber Studio"}'::jsonb, '{"banco":"Banesco","cuenta":"0102-xxxx-xx-xxxx","titular":"Barber Studio"}'::jsonb, '{"correo":"admin@barberstudio.app","id_usuario":"@barberstudio"}'::jsonb
+where not exists (select 1 from public.platform_config);
+
 -- =====================================================================
 -- TABLA: services
 -- =====================================================================
@@ -195,6 +234,33 @@ drop policy if exists "appointments owner delete" on public.appointments;
 create policy "appointments owner delete"
   on public.appointments for delete
   using (exists (select 1 from public.barbers b where b.id = barber_id and b.user_id = auth.uid()));
+
+-- ---------- payment_requests ----------
+alter table public.payment_requests enable row level security;
+
+drop policy if exists "payment_requests insert own" on public.payment_requests;
+create policy "payment_requests insert own"
+  on public.payment_requests for insert
+  with check (exists (select 1 from public.barbers b where b.id = barber_id and b.user_id = auth.uid()));
+
+drop policy if exists "payment_requests select own" on public.payment_requests;
+create policy "payment_requests select own"
+  on public.payment_requests for select
+  using (exists (select 1 from public.barbers b where b.id = barber_id and b.user_id = auth.uid()));
+
+-- ---------- platform_config ----------
+alter table public.platform_config enable row level security;
+
+drop policy if exists "platform_config public read" on public.platform_config;
+create policy "platform_config public read"
+  on public.platform_config for select
+  using (true);
+
+drop policy if exists "platform_config admin update" on public.platform_config;
+create policy "platform_config admin update"
+  on public.platform_config for update
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
 -- =====================================================================
 -- STORAGE BUCKETS

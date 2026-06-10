@@ -20,5 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!barber) redirect('/onboarding');
 
+  if (barber.subscription_status !== 'active') redirect('/pagar');
+
   return <DashboardShell barber={barber}>{children}</DashboardShell>;
 }
