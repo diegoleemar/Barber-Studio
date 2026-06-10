@@ -8,12 +8,11 @@ import { activateUser, deactivateUser, verifyPayment, rejectPayment, updatePlatf
 type Tab = 'usuarios' | 'pagos' | 'config';
 
 export default function AdminClient({
-  barbers, requests, config, userId
+  barbers, requests, config
 }: {
   barbers: Barber[];
   requests: PaymentRequest[];
   config: PlatformConfig | null;
-  userId: string;
 }) {
   const [tab, setTab] = useState<Tab>('pagos');
   const [search, setSearch] = useState('');
