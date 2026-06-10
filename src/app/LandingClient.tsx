@@ -43,20 +43,20 @@ export default function LandingClient() {
       <nav className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
         scrolled ? 'border-b border-[#222] bg-black/80 backdrop-blur-xl' : 'bg-transparent'
       }`}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="Barber Studio" className="h-8 w-8 rounded-lg object-contain" />
-            <span className="text-[17px] font-semibold tracking-tight">Barber Studio</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="Barber Studio" className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg object-contain" />
+            <span className="text-[15px] sm:text-[17px] font-semibold tracking-tight">Barber Studio</span>
           </Link>
           <div className="hidden items-center gap-1 md:flex">
             <a href="#features" className="btn-ghost !text-[14px]">Funciones</a>
             <a href="#como-funciona" className="btn-ghost !text-[14px]">Cómo funciona</a>
             <a href="#faq" className="btn-ghost !text-[14px]">FAQ</a>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="btn-ghost !h-[38px] !px-4 !text-[13px]">Iniciar sesión</Link>
-            <Link href="/login" className="inline-flex h-[38px] items-center justify-center gap-2 rounded-lg bg-brand px-5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 active:scale-[0.97]">
-              Comenzar
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login" className="hidden sm:inline-flex btn-ghost !h-[38px] !px-4 !text-[13px]">Iniciar sesión</Link>
+            <Link href="/login" className="inline-flex h-[44px] sm:h-[38px] items-center justify-center gap-2 rounded-lg bg-brand px-4 sm:px-5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 active:scale-[0.97] min-w-[44px]">
+              {scrolled ? 'Comenzar' : 'Comenzar'}
             </Link>
           </div>
         </div>
@@ -73,14 +73,14 @@ export default function LandingClient() {
         <FaqSection />
       </main>
 
-      <footer className="border-t border-[#222] px-6 py-12">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
+      <footer className="border-t border-[#222] px-4 sm:px-6 py-10 sm:py-12">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 sm:gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Barber Studio" className="h-7 w-7 rounded-md object-contain" />
-            <span className="text-[14px] font-semibold">Barber Studio</span>
+            <img src="/logo.png" alt="Barber Studio" className="h-6 w-6 sm:h-7 sm:w-7 rounded-md object-contain" />
+            <span className="text-[13px] sm:text-[14px] font-semibold">Barber Studio</span>
           </div>
-          <p className="text-[13px] text-label-tertiary">Hecho para los barberos de Venezuela · Planes desde $10/mes</p>
-          <div className="flex gap-4 text-[13px] text-label-tertiary">
+          <p className="text-[12px] sm:text-[13px] text-label-tertiary text-center sm:text-left">Hecho para los barberos de Venezuela · Planes desde $10/mes</p>
+          <div className="flex gap-4 text-[12px] sm:text-[13px] text-label-tertiary">
             <a href="https://supabase.com" target="_blank" rel="noreferrer" className="transition hover:text-brand">Supabase</a>
             <a href="https://vercel.com" target="_blank" rel="noreferrer" className="transition hover:text-brand">Vercel</a>
           </div>
@@ -101,15 +101,15 @@ const HeroSection = () => (
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-brand/[0.03] blur-[250px]" />
       <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
     </div>
+    <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6 pt-28 pb-16 sm:pt-36 sm:pb-24 text-center">
 
-    <div className="relative mx-auto max-w-5xl px-6 w-full pt-36 pb-24 text-center">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#222] bg-[rgba(13,13,13,0.8)] px-3.5 py-1.5 text-[12px] font-medium text-brand">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-[#222] bg-[rgba(13,13,13,0.8)] px-3 py-1 sm:px-3.5 sm:py-1.5 text-[11px] sm:text-[12px] font-medium text-brand">
           <Sparkles className="h-3 w-3" /> Para barberos en Venezuela
         </span>
       </motion.div>
 
-      <h1 className="mt-8 text-[clamp(2.5rem,7vw,5.5rem)] font-bold tracking-[-0.04em] leading-[1.05] max-w-4xl mx-auto">
+      <h1 className="mt-6 sm:mt-8 text-[clamp(2rem,7vw,5.5rem)] font-bold tracking-[-0.03em] sm:tracking-[-0.04em] leading-[1.05] max-w-4xl mx-auto">
         {['Tu', 'barbería,', 'siempre', 'llena'].map((word, i) => (
           <span key={i} style={{
             display: 'inline-block',
@@ -129,20 +129,20 @@ const HeroSection = () => (
       </motion.p>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.95 }}
-        className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <GoogleSignInButton label="Empieza prueba gratis" className="!h-12 !rounded-xl !text-[15px] !font-semibold !shadow-glow-lg !px-8" />
-        <Link href="#features" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#222] bg-[rgba(13,13,13,0.8)] px-8 text-[15px] font-medium text-label-primary transition-all duration-200 hover:bg-white/5 active:scale-[0.97]">
+        className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        <GoogleSignInButton label="Empieza prueba gratis" className="!h-[52px] w-full sm:w-auto !rounded-xl !text-[15px] !font-semibold !shadow-glow-lg sm:!px-8" />
+        <Link href="#features" className="inline-flex h-[52px] w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-[#222] bg-[rgba(13,13,13,0.8)] px-8 text-[15px] font-medium text-label-primary transition-all duration-200 hover:bg-white/5 active:scale-[0.97]">
           Ver funciones <ArrowRight className="h-4 w-4" />
         </Link>
       </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.1 }}
-        className="mt-8 flex items-center justify-center gap-2 text-[13px] text-label-tertiary">
-        <Check className="h-4 w-4 text-brand" /> Prueba 7 días gratis
-        <span className="w-1 h-1 rounded-full bg-label-quaternary" />
-        <Check className="h-4 w-4 text-brand" /> Sin tarjeta
-        <span className="w-1 h-1 rounded-full bg-label-quaternary" />
-        <Check className="h-4 h-4 text-brand" /> 1 minuto
+        className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[12px] sm:text-[13px] text-label-tertiary">
+        <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand" /> Prueba 7 días gratis</span>
+        <span className="hidden sm:inline w-1 h-1 rounded-full bg-label-quaternary" />
+        <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand" /> Sin tarjeta</span>
+        <span className="hidden sm:inline w-1 h-1 rounded-full bg-label-quaternary" />
+        <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand" /> 1 minuto</span>
       </motion.div>
     </div>
   </section>
@@ -150,12 +150,12 @@ const HeroSection = () => (
 
 /* ─── LOGO BAR (inspired by Xtract) ─── */
 const LogoBarSection = () => (
-  <section className="py-16 border-y border-[#222]">
-    <div className="mx-auto max-w-6xl px-6">
-      <p className="text-center text-[12px] font-medium text-label-tertiary uppercase tracking-widest mb-8">Usado por barberos en todo Venezuela</p>
-      <div className="flex items-center justify-center gap-10 md:gap-16 opacity-40">
+  <section className="py-12 sm:py-16 border-y border-[#222]">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <p className="text-center text-[11px] sm:text-[12px] font-medium text-label-tertiary uppercase tracking-widest mb-6 sm:mb-8">Usado por barberos en todo Venezuela</p>
+      <div className="flex items-center justify-start sm:justify-center gap-8 sm:gap-10 md:gap-16 opacity-40 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
         {['Caracas', 'Maracaibo', 'Valencia', 'Barquisimeto', 'Maracay', 'Ciudad Guayana'].map((city) => (
-          <div key={city} className="text-[14px] font-semibold text-label-secondary tracking-tight whitespace-nowrap">{city}</div>
+          <div key={city} className="text-[13px] sm:text-[14px] font-semibold text-label-secondary tracking-tight whitespace-nowrap shrink-0">{city}</div>
         ))}
       </div>
     </div>
@@ -174,7 +174,7 @@ const FeaturesSection = () => {
 
   return (
     <section ref={ref} id="features" className="section-full relative overflow-hidden">
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeader badge="Funciones" title="Todo lo que necesitas para gestionar tu barbería" desc="Planes desde $10/mes para impulsar tu negocio." />
 
         {/* Feature 1: Agenda visual mockup left, content right */}
@@ -337,13 +337,13 @@ const PricingSection = () => {
 
   return (
     <section ref={ref} id="planes" className="section-full relative overflow-hidden border-y border-[#222]">
-      <div className="relative mx-auto max-w-5xl px-6">
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6">
         <SectionHeader badge="Planes" title="Elige tu plan" desc="Paga solo lo que necesitas. Cancela cuando quieras." />
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
           {plans.map((p, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: 0.1 * i }}
-              className={`relative rounded-2xl p-8 transition-all duration-300 ${
+              className={`relative rounded-2xl p-5 sm:p-8 transition-all duration-300 ${
                 p.featured
                   ? 'bg-gradient-to-b from-brand/[0.03] to-black ring-2 ring-brand/40 shadow-glow-lg'
                   : 'bg-black ring-1 ring-[#222] hover:ring-brand/30'
@@ -403,7 +403,7 @@ const ComoFunciona = () => {
 
   return (
     <section ref={ref} id="como-funciona" className="section-full relative overflow-hidden">
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeader badge="3 pasos" title="Empieza en 2 minutos" />
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-16 relative">
@@ -446,7 +446,7 @@ const TestimoniosSection = () => {
 
   return (
     <section ref={ref} className="section-full relative overflow-hidden border-y border-[#222]">
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeader badge={<><Quote className="h-3 w-3" /> Testimonios</>} title="Lo que dicen los barberos" />
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, i) => (
@@ -485,17 +485,17 @@ const CTASection = () => {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-brand/[0.04] blur-[200px]" />
       </div>
-      <div className="relative mx-auto max-w-3xl px-6 text-center">
-        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-3xl border border-[#222] bg-[rgba(13,13,13,0.8)]">
-          <img src="/logo.png" alt="" className="h-10 w-10 object-contain" />
+      <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
+        <div className="mx-auto mb-6 sm:mb-8 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl border border-[#222] bg-[rgba(13,13,13,0.8)]">
+          <img src="/logo.png" alt="" className="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
         </div>
-        <h2 className="text-display text-[clamp(2rem,4vw,3.5rem)]">¿Listo para llenar tu agenda?</h2>
-        <p className="mx-auto mt-4 max-w-md text-[16px] text-label-secondary">Prueba gratis 7 días. Sin compromiso.</p>
-        <div className="mt-10 flex flex-col items-center gap-4">
-          <GoogleSignInButton label="Empezar prueba gratis" className="!h-14 !rounded-xl !text-[17px] !font-semibold !shadow-glow-lg !px-10 animate-glow-pulse" />
-          <p className="text-[13px] text-label-tertiary">Sin instalaciones · Sin tarjeta · 1 minuto</p>
+        <h2 className="text-display text-[clamp(1.6rem,4vw,3.5rem)]">¿Listo para llenar tu agenda?</h2>
+        <p className="mx-auto mt-3 sm:mt-4 max-w-md text-[14px] sm:text-[16px] text-label-secondary">Prueba gratis 7 días. Sin compromiso.</p>
+        <div className="mt-8 sm:mt-10 flex flex-col items-center gap-3 sm:gap-4">
+          <GoogleSignInButton label="Empezar prueba gratis" className="!h-[52px] w-full sm:w-auto !rounded-xl !text-[15px] sm:!text-[17px] !font-semibold !shadow-glow-lg sm:!px-10 animate-glow-pulse" />
+          <p className="text-[12px] sm:text-[13px] text-label-tertiary">Sin instalaciones · Sin tarjeta · 1 minuto</p>
         </div>
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-8 md:gap-16">
+        <div className="mt-12 sm:mt-16 flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-16">
           {[
             { label: 'Prueba 7 días', desc: 'Sin tarjeta' },
             { label: 'Cancela cuando quieras', desc: 'Sin multas' },
@@ -534,21 +534,21 @@ const FaqSection = () => {
 
   return (
     <section ref={ref} id="faq" className="section-full">
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <SectionHeader badge="FAQ" title="Preguntas frecuentes" />
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {FAQS.map(({ q, a }, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.05 * i }}
               className="rounded-2xl border border-[#222] bg-black overflow-hidden">
               <button onClick={() => setOpen(open === i ? null : i)}
-                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-[15px] font-medium transition hover:text-brand">
+                className="touch-target flex w-full items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 text-left text-[14px] sm:text-[15px] font-medium transition hover:text-brand">
                 <span>{q}</span>
                 <ChevronDown className={`h-4 w-4 shrink-0 text-label-tertiary transition-transform duration-300 ${open === i ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
                 {open === i && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-                    <p className="px-6 pb-6 text-[14px] leading-relaxed text-label-secondary">{a}</p>
+                    <p className="px-4 sm:px-6 pb-4 sm:pb-6 text-[13px] sm:text-[14px] leading-relaxed text-label-secondary">{a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>

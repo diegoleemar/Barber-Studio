@@ -20,7 +20,7 @@ export default function GoogleSignInButton({ label = 'Continuar con Google', cla
 
   return (
     <button type="button" onClick={handleLogin} disabled={loading}
-      className={`inline-flex h-[50px] items-center justify-center gap-3 rounded-xl bg-white px-6 text-[15px] font-semibold text-base-950 shadow-sm ring-1 ring-black/5 transition-all duration-150 hover:bg-neutral-50 hover:shadow-md active:scale-[0.98] disabled:opacity-60 ${className || ''}`}>
+      className={`inline-flex min-h-[52px] items-center justify-center gap-3 rounded-xl bg-white px-6 text-[15px] font-semibold text-base-950 shadow-sm ring-1 ring-black/5 transition-all duration-150 hover:bg-neutral-50 hover:shadow-md active:scale-[0.98] disabled:opacity-60 ${className || ''}`}>
       {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
       <span>{loading ? 'Conectando…' : label}</span>
     </button>
