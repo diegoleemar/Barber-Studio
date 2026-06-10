@@ -124,7 +124,7 @@ export default function AgendaView({ barberId, services }: { barberId: string; s
 
       {/* Day strip */}
       {mounted && <div className="mb-5 -mx-4 overflow-x-auto px-4 no-scrollbar lg:-mx-8 lg:px-8">
-        <div className="flex gap-1.5 min-w-max">
+        <div className="flex gap-1.5 w-max">
           {dayStrip.map((d) => {
             const key = toDateKey(d);
             const isSel = key === selectedKey;
