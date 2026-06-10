@@ -106,7 +106,7 @@ export default function PagarClient({ barber, config, requests }: { barber: Barb
       </div>
 
       <div className="relative z-10 mx-auto max-w-2xl px-4 py-10">
-        <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] text-label-tertiary hover:text-label-primary transition mb-8">
+        <Link href="/" className="touch-target inline-flex items-center gap-1.5 text-[13px] text-label-tertiary hover:text-label-primary transition mb-2">
           <ArrowLeft className="h-4 w-4" /> Volver al inicio
         </Link>
 
