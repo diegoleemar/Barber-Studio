@@ -1,11 +1,17 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { DM_Sans, Manrope } from 'next/font/google';
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-dm-sans'
+});
+
+const manrope = Manrope({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-plus-jakarta-sans'
+  variable: '--font-manrope'
 });
 
 export const metadata: Metadata = {
@@ -34,7 +40,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${plusJakartaSans.variable}`}>
+    <html lang="es" className={`${dmSans.variable} ${manrope.variable}`}>
       <body className="min-h-screen font-sans antialiased bg-base-950 text-label-primary">
         {children}
         <ServiceWorkerRegister />
