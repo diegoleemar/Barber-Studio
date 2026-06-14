@@ -4,19 +4,23 @@ import PagarClient from './PagarClient';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PagarPage() {
+export default async function PagarPage({
+  searchParams,
+}: {
+  searchParams: { plan?: string; months?: string };
+}) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const { data: barber } = await supabase
-    .from('barbers')
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('*')
     .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!barber) redirect('/onboarding');
-  if (barber.subscription_status === 'active') redirect('/dashboard');
+  if (!profile) redirect('/onboarding');
+  if (profile.subscription_status === 'active') redirect('/dashboard');
 
   const { data: config } = await supabase
     .from('platform_config')
@@ -26,14 +30,16 @@ export default async function PagarPage() {
   const { data: myRequests } = await supabase
     .from('payment_requests')
     .select('*')
-    .eq('barber_id', barber.id)
+    .eq('profile_id', profile.id)
     .order('created_at', { ascending: false });
 
   return (
     <PagarClient
-      barber={barber}
+      profile={profile}
       config={config}
       requests={myRequests || []}
+      defaultPlan={searchParams.plan as 'individual' | 'business' | undefined}
+      defaultMonths={searchParams.months ? parseInt(searchParams.months) : undefined}
     />
   );
 }

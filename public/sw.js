@@ -1,16 +1,8 @@
-const CACHE = 'barber-studio-v1';
-const ASSETS = [
-  '/',
-  '/login',
-  '/manifest.json',
-  '/icon.svg',
-  '/icon-192.svg'
-];
+const CACHE = 'goclient-v1';
+const ASSETS = ['/', '/login', '/manifest.json', '/icon.svg', '/icon-192.svg'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
 });
 
 self.addEventListener('fetch', (event) => {

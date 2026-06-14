@@ -9,42 +9,48 @@ module.exports = {
     extend: {
       colors: {
         base: {
-          950: '#030303',
-          900: '#0A0A0B',
-          800: '#111113',
-          700: '#1A1A1D',
-          600: '#222226',
-          500: '#2C2C30',
-          400: '#3A3A40',
-          border: '#1E1E22',
-          'border-light': '#2A2A30'
+          950: '#fafaf9',
+          900: '#f5f5f4',
+          800: '#ffffff',
+          700: '#e7e5e4',
+          600: '#d6d3d1',
+          500: '#a8a29e',
+          400: '#78716c',
+          border: '#e7e5e4',
+          'border-light': '#f5f5f4'
         },
         brand: {
-          DEFAULT: '#06B6D4',
-          soft: '#22D3EE',
-          dim: '#0891B2',
-          pale: '#67E8F9',
-          glow: 'rgba(6,182,212,0.15)',
-          'glow-intense': 'rgba(6,182,212,0.3)'
+          DEFAULT: '#f94b25',
+          soft: '#fa6a4a',
+          dim: '#d43a1a',
+          pale: '#fed7cc',
+          glow: 'rgba(249, 75, 37, 0.12)',
+          'glow-intense': 'rgba(249, 75, 37, 0.25)'
+        },
+        lime: {
+          DEFAULT: '#a3e635',
+          soft: '#bef264',
+          dim: '#84cc16',
+          pale: '#d9f99d',
         },
         glass: {
-          white: 'rgba(255,255,255,0.04)',
-          hover: 'rgba(255,255,255,0.08)',
-          active: 'rgba(255,255,255,0.1)',
-          border: 'rgba(255,255,255,0.06)',
-          card: 'rgba(255,255,255,0.03)'
+          white: 'rgba(255, 255, 255, 0.7)',
+          hover: 'rgba(249, 75, 37, 0.04)',
+          active: 'rgba(249, 75, 37, 0.08)',
+          border: 'rgba(0, 0, 0, 0.06)',
+          card: 'rgba(255, 255, 255, 0.8)'
         },
         label: {
-          primary: '#F1F1F3',
-          secondary: '#94949E',
-          tertiary: '#63636E',
-          quaternary: '#444450'
+          primary: '#0a0915',
+          secondary: '#52525a',
+          tertiary: '#71717a',
+          quaternary: '#a1a1aa'
         },
         status: {
-          pending: '#F59E0B',
-          confirmed: '#22C55E',
-          cancelled: '#EF4444',
-          draft: '#63636E'
+          pending: '#f59e0b',
+          confirmed: '#10b981',
+          cancelled: '#ef4444',
+          draft: '#78716c'
         }
       },
       fontFamily: {
@@ -66,16 +72,17 @@ module.exports = {
         '3xl': '24px'
       },
       boxShadow: {
-        'card-sm': '0 1px 2px rgba(0,0,0,0.3)',
-        card: '0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15)',
-        'card-hover': '0 4px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)',
-        elevated: '0 8px 24px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)',
-        dialog: '0 20px 60px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3)',
-        glow: '0 0 20px rgba(6,182,212,0.15)',
-        'glow-lg': '0 0 40px rgba(6,182,212,0.25)',
-        'glow-xl': '0 0 60px rgba(6,182,212,0.3)',
-        'inner-sm': 'inset 0 1px 0 rgba(255,255,255,0.04)',
-        'inner-md': 'inset 0 1px 0 rgba(255,255,255,0.06)'
+        'card-sm': '0 1px 2px rgba(0,0,0,0.05)',
+        card: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        'card-hover': '0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)',
+        elevated: '0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+        dialog: '0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
+        glow: '0 0 20px rgba(249,75,37,0.15)',
+        'glow-lg': '0 0 40px rgba(249,75,37,0.25)',
+        'glow-xl': '0 0 60px rgba(249,75,37,0.35)',
+        'glow-lime': '0 0 20px rgba(163,230,53,0.2)',
+        'inner-sm': 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        'inner-md': 'inset 0 1px 0 rgba(255,255,255,0.8)'
       },
       spacing: {
         sidebar: '240px',
@@ -93,7 +100,14 @@ module.exports = {
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
         'drift': 'drift 8s ease-in-out infinite',
-        'shimmer': 'shimmer 3s linear infinite'
+        'shimmer': 'shimmer 3s linear infinite',
+        'arc-spin': 'arcSpin 16s linear infinite',
+        'orbit-spin': 'orbitSpin 12s linear infinite',
+        'ping-slow': 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'progress-fill': 'progressFill 2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'bar-rise': 'barRise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'ticker-scroll': 'tickerScroll 50s linear infinite',
+        'ticker-scroll-reverse': 'tickerScrollReverse 45s linear infinite'
       },
       keyframes: {
         fadeIn: {
@@ -125,8 +139,8 @@ module.exports = {
           '50%': { opacity: '0.6' }
         },
         glowPulse: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(6,182,212,0.15)' },
-          '50%': { boxShadow: '0 0 40px rgba(6,182,212,0.3)' }
+          '0%, 100%': { boxShadow: '0 0 20px rgba(249,75,37,0.12)' },
+          '50%': { boxShadow: '0 0 40px rgba(249,75,37,0.25)' }
         },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
@@ -140,6 +154,30 @@ module.exports = {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' }
+        },
+        arcSpin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        orbitSpin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        progressFill: {
+          '0%': { width: '0%' },
+          '100%': { width: '68%' }
+        },
+        barRise: {
+          '0%': { transform: 'scaleY(0)' },
+          '100%': { transform: 'scaleY(1)' }
+        },
+        tickerScroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' }
+        },
+        tickerScrollReverse: {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' }
         }
       }
     }

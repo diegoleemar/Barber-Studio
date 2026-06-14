@@ -1,3 +1,5 @@
+import type { BookingFlowType, SlotConfig } from './types';
+
 export const DIAS_SEMANA = [
   'Domingo',
   'Lunes',
@@ -52,7 +54,10 @@ export const formatHora12 = (time: string) => {
 export const formatFechaLarga = (date: Date) =>
   `${DIAS_SEMANA[date.getDay()]}, ${date.getDate()} de ${MESES[date.getMonth()]}`;
 
-export const generateSlots = (
+// ─── Generador de slots según BookingFlowType ───
+
+/** Slots para flujo 'interval' (bloques cortos: barberos, médicos, etc.) */
+export const generateIntervalSlots = (
   inicio: string,
   fin: string,
   intervalo: number
@@ -64,6 +69,81 @@ export const generateSlots = (
     slots.push(minutesToTime(t));
   }
   return slots;
+};
+
+/** Slots para flujo 'block' (bloques largos: tatuadores, estudio musical)
+ *  Muestra el bloque completo como disponible, sin subdividir */
+export const generateBlockSlots = (
+  inicio: string,
+  fin: string,
+  _minDuration: number
+): string[] => {
+  const start = timeToMinutes(inicio);
+  const end = timeToMinutes(fin);
+  const totalMinutes = end - start;
+  if (totalMinutes < _minDuration) return [];
+  return [minutesToTime(start)]; // Un solo bloque desde la hora inicio
+};
+
+/** Slots para flujo 'home_service' (domicilio: técnicos, fisioterapeutas)
+ *  Similar a interval pero con disponibilidad por zonas/traslado */
+export const generateHomeServiceSlots = (
+  inicio: string,
+  fin: string,
+  intervalo: number
+): string[] => {
+  const start = timeToMinutes(inicio);
+  const end = timeToMinutes(fin);
+  const slots: string[] = [];
+  // Bloques más amplios para considerar traslado
+  const adjustedInterval = Math.max(intervalo, 60);
+  for (let t = start; t + adjustedInterval <= end; t += adjustedInterval) {
+    slots.push(minutesToTime(t));
+  }
+  return slots;
+};
+
+/** Selector automático según el tipo de flujo */
+export const generateSlotsByFlow = (
+  inicio: string,
+  fin: string,
+  config: SlotConfig
+): string[] => {
+  switch (config.flowType) {
+    case 'interval':
+      return generateIntervalSlots(inicio, fin, config.interval);
+    case 'block':
+      return generateBlockSlots(inicio, fin, config.minDuration);
+    case 'home_service':
+      return generateHomeServiceSlots(inicio, fin, config.interval);
+  }
+};
+
+// ─── Utilidad: obtener el SlotConfig desde una profesión ───
+export const professionToSlotConfig = (profession: {
+  booking_flow_type: BookingFlowType;
+  default_interval: number;
+  min_duration: number;
+  max_duration: number;
+  requires_deposit: boolean;
+  supports_online: boolean;
+}): SlotConfig => ({
+  flowType: profession.booking_flow_type,
+  interval: profession.default_interval,
+  minDuration: profession.min_duration,
+  maxDuration: profession.max_duration,
+  requiresDeposit: profession.requires_deposit,
+  supportsOnline: profession.supports_online,
+});
+
+// ─── Helper: display name del tipo de flujo ───
+export const flowTypeLabel = (type: BookingFlowType): string => {
+  const labels: Record<BookingFlowType, string> = {
+    interval: 'Por turnos',
+    block: 'Por bloques',
+    home_service: 'A domicilio',
+  };
+  return labels[type];
 };
 
 export const slugify = (s: string) =>

@@ -10,12 +10,12 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   if (user) {
-    const { data: barber } = await supabase
-      .from('barbers')
+    const { data: profile } = await supabase
+      .from('profiles')
       .select('username')
       .eq('user_id', user.id)
       .maybeSingle();
-    if (barber) redirect('/dashboard');
+    if (profile) redirect('/dashboard');
     redirect('/onboarding');
   }
 

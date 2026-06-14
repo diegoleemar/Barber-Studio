@@ -48,21 +48,21 @@ export default function IOSCalendar({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-[17px] font-semibold text-label-primary">
+        <h3 className="text-[16px] font-extrabold text-neutral-900">
           {MESES[cursor.getMonth()]} {cursor.getFullYear()}
         </h3>
         <div className="flex gap-1">
           <button
             onClick={() => navigate(-1)}
             disabled={!canGoBack}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-800 text-label-secondary transition hover:bg-base-700 hover:text-label-primary disabled:opacity-30"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 hover:text-black disabled:opacity-30"
             aria-label="Mes anterior"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => navigate(1)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-800 text-label-secondary transition hover:bg-base-700 hover:text-label-primary"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 hover:text-black"
             aria-label="Mes siguiente"
           >
             <ChevronRight className="h-4 w-4" />
@@ -70,7 +70,7 @@ export default function IOSCalendar({
         </div>
       </div>
 
-      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-wider text-label-tertiary">
+      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wider text-neutral-400">
         {DIAS_CORTOS.map((d) => (
           <span key={d}>{d}</span>
         ))}
@@ -90,14 +90,14 @@ export default function IOSCalendar({
               key={i}
               disabled={disabled}
               onClick={() => onChange(d)}
-              className={`touch-target-sm flex aspect-square items-center justify-center rounded-xl text-[15px] font-semibold transition-all duration-150 ${
+              className={`touch-target-sm flex aspect-square items-center justify-center rounded-xl text-[14px] font-bold transition-all duration-150 ${
                 isSelected
-                  ? 'bg-brand text-white shadow-glow'
+                  ? 'bg-[#d2ff00] text-black border border-black/10 shadow-sm'
                   : isToday
-                    ? 'bg-base-800 text-brand ring-1 ring-brand/40'
+                    ? 'bg-[#FAF9F6] text-black ring-2 ring-[#d2ff00]'
                     : disabled
-                      ? 'text-label-quaternary'
-                      : 'text-label-secondary hover:bg-base-800 hover:text-label-primary'
+                      ? 'text-neutral-300'
+                      : 'text-neutral-700 hover:bg-neutral-100 hover:text-black'
               }`}
             >
               {d.getDate()}

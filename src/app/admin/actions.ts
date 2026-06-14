@@ -3,27 +3,27 @@
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-export async function activateUser(barberId: string, plan: string) {
+export async function activateUser(profileId: string, plan: string) {
   const supabase = createAdminClient();
   const { error } = await supabase
-    .from('barbers')
+    .from('profiles')
     .update({ subscription_status: 'active', subscription_plan: plan })
-    .eq('id', barberId);
+    .eq('id', profileId);
   if (error) throw new Error(error.message);
   revalidatePath('/admin');
 }
 
-export async function deactivateUser(barberId: string) {
+export async function deactivateUser(profileId: string) {
   const supabase = createAdminClient();
   const { error } = await supabase
-    .from('barbers')
+    .from('profiles')
     .update({ subscription_status: 'inactive', subscription_plan: null })
-    .eq('id', barberId);
+    .eq('id', profileId);
   if (error) throw new Error(error.message);
   revalidatePath('/admin');
 }
 
-export async function verifyPayment(requestId: string, barberId: string, plan: string) {
+export async function verifyPayment(requestId: string, profileId: string, plan: string) {
   const supabase = createAdminClient();
   const { error: reqError } = await supabase
     .from('payment_requests')
@@ -31,11 +31,11 @@ export async function verifyPayment(requestId: string, barberId: string, plan: s
     .eq('id', requestId);
   if (reqError) throw new Error(reqError.message);
 
-  const { error: barberError } = await supabase
-    .from('barbers')
+  const { error: profileError } = await supabase
+    .from('profiles')
     .update({ subscription_status: 'active', subscription_plan: plan })
-    .eq('id', barberId);
-  if (barberError) throw new Error(barberError.message);
+    .eq('id', profileId);
+  if (profileError) throw new Error(profileError.message);
 
   revalidatePath('/admin');
 }

@@ -1,32 +1,32 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-inter'
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-plus-jakarta-sans'
 });
 
 export const metadata: Metadata = {
-  title: 'Barber Studio — Gestión profesional para barberías',
+  title: 'Qfino — Agenda tu negocio al pelo, sin rollos',
   description:
-    'Plataforma SaaS moderna para gestionar tu barbería: reservas, clientes, servicios y más.',
-  applicationName: 'Barber Studio',
+    'La plataforma de agendamiento más limpia y precisa para gestionar tu negocio. Agenda tus citas de una y dile adiós al ir y venir de mensajes por WhatsApp. Diseñado para profesionales.',
+  applicationName: 'Qfino',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png'
+    icon: '/icon.svg',
+    apple: '/icon.svg'
   },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'Barber Studio',
-    statusBarStyle: 'black-translucent'
+    title: 'Qfino',
+    statusBarStyle: 'default'
   }
 };
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1
@@ -34,8 +34,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable}`}>
-      <body className="min-h-screen font-sans antialiased">
+    <html lang="es" className={`${plusJakartaSans.variable}`}>
+      <body className="min-h-screen font-sans antialiased bg-base-950 text-label-primary">
         {children}
         <ServiceWorkerRegister />
       </body>

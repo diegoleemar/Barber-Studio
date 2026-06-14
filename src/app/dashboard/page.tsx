@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import AgendaView from './AgendaView';
 
 export const dynamic = 'force-dynamic';
@@ -8,19 +9,20 @@ export default async function DashboardPage() {
   const {
     data: { user }
   } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  const { data: barber } = await supabase
-    .from('barbers')
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('id')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!barber) return null;
+  if (!profile) return null;
 
   const { data: services } = await supabase
     .from('services')
     .select('*')
-    .eq('barber_id', barber.id);
+    .eq('profile_id', profile.id);
 
-  return <AgendaView barberId={barber.id} services={services || []} />;
+  return <AgendaView profileId={profile.id} services={services || []} />;
 }

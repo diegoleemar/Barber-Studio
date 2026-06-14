@@ -18,15 +18,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/login');
 
-  const { data: barber } = await supabase
-    .from('barbers')
-    .select('*')
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*, profession:professions(*)')
     .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!barber) redirect('/onboarding');
+  if (!profile) redirect('/onboarding');
 
-  const status = barber.subscription_status || 'inactive';
+  const status = profile.subscription_status || 'inactive';
 
   if (status !== 'active') {
     const userEmail = getEmail(user);
@@ -34,19 +34,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
     if (isDemo) {
       await supabase
-        .from('barbers')
-        .update({ subscription_status: 'active', subscription_plan: 'barberia' })
-        .eq('id', barber.id);
+        .from('profiles')
+        .update({ subscription_status: 'active', subscription_plan: 'business' })
+        .eq('id', profile.id);
       const { data: updated } = await supabase
-        .from('barbers')
-        .select('*')
-        .eq('id', barber.id)
+        .from('profiles')
+        .select('*, profession:professions(*)')
+        .eq('id', profile.id)
         .single();
-      if (updated) Object.assign(barber, updated);
-    } else {
-      redirect('/pagar');
+      if (updated) Object.assign(profile, updated);
     }
+    // New users can explore the dashboard freely before subscribing
   }
 
-  return <DashboardShell barber={barber}>{children}</DashboardShell>;
+  return <DashboardShell profile={profile}>{children}</DashboardShell>;
 }

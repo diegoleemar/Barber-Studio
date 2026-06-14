@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 import { Users, CreditCard, Settings, Check, X, Loader2, Search, Smartphone, Landmark, Shield, ExternalLink } from 'lucide-react';
-import type { Barber, PaymentRequest, PlatformConfig } from '@/lib/types';
+import type { Profile, Profession, PaymentRequest, PlatformConfig } from '@/lib/types';
 import { activateUser, deactivateUser, verifyPayment, rejectPayment, updatePlatformConfig } from './actions';
 
 type Tab = 'usuarios' | 'pagos' | 'config';
 
 export default function AdminClient({
-  barbers, requests, config
+  profiles, requests, config
 }: {
-  barbers: Barber[];
-  requests: PaymentRequest[];
+  profiles: (Profile & { profession?: Profession })[];
+  requests: (PaymentRequest & { profile?: Profile })[];
   config: PlatformConfig | null;
 }) {
   const [tab, setTab] = useState<Tab>('pagos');
@@ -21,7 +21,6 @@ export default function AdminClient({
   const [rejectModal, setRejectModal] = useState<PaymentRequest | null>(null);
   const [rejectNotas, setRejectNotas] = useState('');
 
-  // Config form state
   const [editingConfig, setEditingConfig] = useState(false);
   const [cfg, setCfg] = useState({
     pago_movil: config?.pago_movil || { banco: '', telefono: '', titular: '' },
@@ -29,10 +28,10 @@ export default function AdminClient({
     binancepay: config?.binancepay || { correo: '', id_usuario: '' },
   });
 
-  const filteredBarbers = barbers.filter(b => {
-    if (filter === 'active' && b.subscription_status !== 'active') return false;
-    if (filter === 'inactive' && b.subscription_status !== 'inactive') return false;
-    if (search && !b.nombre.toLowerCase().includes(search.toLowerCase()) && !b.username.toLowerCase().includes(search.toLowerCase())) return false;
+  const filteredProfiles = profiles.filter(p => {
+    if (filter === 'active' && p.subscription_status !== 'active') return false;
+    if (filter === 'inactive' && p.subscription_status !== 'inactive') return false;
+    if (search && !p.business_name.toLowerCase().includes(search.toLowerCase()) && !p.username.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -52,9 +51,9 @@ export default function AdminClient({
     setLoadingId(null);
   };
 
-  const handleVerify = async (req: PaymentRequest) => {
+  const handleVerify = async (req: PaymentRequest & { profile?: Profile }) => {
     setLoadingId(req.id);
-    try { await verifyPayment(req.id, req.barber_id, req.plan); } catch (e) { console.error(e); }
+    try { await verifyPayment(req.id, req.profile_id, req.plan); } catch (e) { console.error(e); }
     setLoadingId(null);
   };
 
@@ -84,8 +83,8 @@ export default function AdminClient({
   };
 
   const planLabel = (plan: string | null) => {
-    if (plan === 'barbero') return 'Barbero';
-    if (plan === 'barberia') return 'Barbería';
+    if (plan === 'individual') return 'Individual';
+    if (plan === 'business') return 'Business';
     return '-';
   };
 
@@ -97,11 +96,10 @@ export default function AdminClient({
 
   return (
     <div className="min-h-screen bg-base-950 text-white">
-      {/* Header */}
       <header className="border-b border-[#222] bg-black/50 backdrop-blur-xl sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-[18px] font-semibold tracking-tight">Admin Panel</h1>
+            <h1 className="text-[18px] font-semibold tracking-tight">Admin Panel — GoClient</h1>
             <span className="text-[11px] text-label-tertiary rounded-md border border-[#222] px-2 py-1">LOCAL ONLY</span>
           </div>
           <div className="flex gap-1 mt-3">
@@ -123,7 +121,6 @@ export default function AdminClient({
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
 
-        {/* ===== PAYMENTS TAB ===== */}
         {tab === 'pagos' && (
           <div className="space-y-4">
             <h2 className="text-[16px] font-semibold">Solicitudes de pago</h2>
@@ -134,17 +131,17 @@ export default function AdminClient({
               </div>
             )}
             {pendingRequests.map(req => {
-              const barber = barbers.find(b => b.id === req.barber_id);
+              const profile = req.profile || profiles.find(p => p.id === req.profile_id);
               return (
                 <div key={req.id} className="rounded-2xl border border-amber-500/20 bg-black p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold">{barber?.nombre || 'Desconocido'}</p>
+                        <p className="font-semibold">{profile?.business_name || 'Desconocido'}</p>
                         {badge(req.status)}
                       </div>
                       <p className="mt-1 text-[13px] text-label-tertiary">
-                        @{barber?.username} · Plan {planLabel(req.plan)} · ${req.monto}
+                        @{profile?.username} · {profile?.profession?.name || '-'} · Plan {planLabel(req.plan)} · ${req.monto}
                       </p>
                       <p className="text-[12px] text-label-tertiary">
                         {req.metodo === 'pago_movil' ? 'Pago Móvil' : req.metodo === 'transferencia' ? 'Transferencia' : 'BinancePay'}
@@ -176,17 +173,16 @@ export default function AdminClient({
               );
             })}
 
-            {/* Historial */}
             {verifiedRequests.length > 0 && (
               <>
                 <h3 className="mt-8 text-[15px] font-semibold text-label-tertiary">Historial verificado</h3>
                 {verifiedRequests.slice(0, 10).map(req => {
-                  const barber = barbers.find(b => b.id === req.barber_id);
+                  const profile = req.profile || profiles.find(p => p.id === req.profile_id);
                   return (
                     <div key={req.id} className="rounded-2xl border border-[#222] bg-black p-4 opacity-70">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-[14px] font-medium">{barber?.nombre || 'Desconocido'} <span className="text-label-tertiary">· {planLabel(req.plan)}</span></p>
+                          <p className="text-[14px] font-medium">{profile?.business_name || 'Desconocido'} <span className="text-label-tertiary">· {planLabel(req.plan)}</span></p>
                           <p className="text-[12px] text-label-tertiary">{new Date(req.created_at).toLocaleDateString('es-VE')}</p>
                         </div>
                         {badge(req.status)}
@@ -199,7 +195,6 @@ export default function AdminClient({
           </div>
         )}
 
-        {/* ===== USERS TAB ===== */}
         {tab === 'usuarios' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -209,7 +204,7 @@ export default function AdminClient({
                     className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition-all ${
                       filter === f ? 'bg-brand text-white' : 'bg-base-800 text-label-tertiary hover:text-label-primary'
                     }`}>
-                    {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : 'Inactivos'} {f === 'all' ? `(${barbers.length})` : f === 'active' ? `(${barbers.filter(b => b.subscription_status === 'active').length})` : `(${barbers.filter(b => b.subscription_status !== 'active').length})`}
+                    {f === 'all' ? 'Todos' : f === 'active' ? 'Activos' : 'Inactivos'} ({f === 'all' ? profiles.length : f === 'active' ? profiles.filter(p => p.subscription_status === 'active').length : profiles.filter(p => p.subscription_status !== 'active').length})
                   </button>
                 ))}
               </div>
@@ -219,7 +214,7 @@ export default function AdminClient({
               </div>
             </div>
 
-            {filteredBarbers.length === 0 && (
+            {filteredProfiles.length === 0 && (
               <div className="rounded-2xl border border-[#222] bg-black p-10 text-center">
                 <Users className="mx-auto h-10 w-10 text-label-quaternary" />
                 <p className="mt-3 text-[14px] text-label-tertiary">No se encontraron usuarios</p>
@@ -227,38 +222,38 @@ export default function AdminClient({
             )}
 
             <div className="space-y-2">
-              {filteredBarbers.map(b => (
-                <div key={b.id} className="rounded-2xl border border-[#222] bg-black p-4 hover:border-[#333] transition">
+              {filteredProfiles.map(p => (
+                <div key={p.id} className="rounded-2xl border border-[#222] bg-black p-4 hover:border-[#333] transition">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-base-700 text-[14px] font-semibold">
-                        {b.nombre.charAt(0).toUpperCase()}
+                        {p.business_name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-[14px]">{b.nombre}</p>
-                        <p className="text-[12px] text-label-tertiary">@{b.username}</p>
+                        <p className="font-medium text-[14px]">{p.business_name}</p>
+                        <p className="text-[12px] text-label-tertiary">@{p.username} · {p.profession?.name || '-'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        {badge(b.subscription_status)}
-                        {b.subscription_plan && <p className="text-[11px] text-label-tertiary mt-0.5">{planLabel(b.subscription_plan)}</p>}
+                        {badge(p.subscription_status)}
+                        {p.subscription_plan && <p className="text-[11px] text-label-tertiary mt-0.5">{planLabel(p.subscription_plan)}</p>}
                       </div>
-                      {b.subscription_status !== 'active' ? (
+                      {p.subscription_status !== 'active' ? (
                         <div className="flex gap-1">
-                          <button onClick={() => handleActivate(b.id, 'barbero')} disabled={loadingId === b.id}
+                          <button onClick={() => handleActivate(p.id, 'individual')} disabled={loadingId === p.id}
                             className="rounded-lg bg-brand/10 px-2.5 py-1.5 text-[11px] font-medium text-brand hover:bg-brand/20 transition disabled:opacity-50">
-                            {loadingId === b.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Barbero'}
+                            {loadingId === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Individual'}
                           </button>
-                          <button onClick={() => handleActivate(b.id, 'barberia')} disabled={loadingId === b.id}
+                          <button onClick={() => handleActivate(p.id, 'business')} disabled={loadingId === p.id}
                             className="rounded-lg bg-brand/10 px-2.5 py-1.5 text-[11px] font-medium text-brand hover:bg-brand/20 transition disabled:opacity-50">
-                            {loadingId === b.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Barbería'}
+                            {loadingId === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Business'}
                           </button>
                         </div>
                       ) : (
-                        <button onClick={() => handleDeactivate(b.id)} disabled={loadingId === b.id}
+                        <button onClick={() => handleDeactivate(p.id)} disabled={loadingId === p.id}
                           className="rounded-lg border border-red-400/20 px-2.5 py-1.5 text-[11px] font-medium text-red-400 hover:bg-red-500/10 transition disabled:opacity-50">
-                          {loadingId === b.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Desactivar'}
+                          {loadingId === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Desactivar'}
                         </button>
                       )}
                     </div>
@@ -269,13 +264,11 @@ export default function AdminClient({
           </div>
         )}
 
-        {/* ===== CONFIG TAB ===== */}
         {tab === 'config' && (
           <div className="max-w-2xl space-y-6">
             <h2 className="text-[16px] font-semibold">Métodos de pago de la plataforma</h2>
             <p className="text-[13px] text-label-tertiary">Estos datos se muestran a los usuarios en la página de pago.</p>
 
-            {/* Pago Móvil */}
             <div className="rounded-2xl border border-[#222] bg-black p-5">
               <div className="flex items-center gap-3 mb-4">
                 <Smartphone className="h-5 w-5 text-brand" />
@@ -290,11 +283,10 @@ export default function AdminClient({
                     className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="0412-1234567" /></div>
                 <div><label className="text-[11px] text-label-tertiary block mb-1">Titular</label>
                   <input type="text" value={cfg.pago_movil.titular} onChange={e => setCfg({...cfg, pago_movil: {...cfg.pago_movil, titular: e.target.value}})}
-                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="Barber Studio" /></div>
+                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="GoClient" /></div>
               </div>
             </div>
 
-            {/* Transferencia */}
             <div className="rounded-2xl border border-[#222] bg-black p-5">
               <div className="flex items-center gap-3 mb-4">
                 <Landmark className="h-5 w-5 text-brand" />
@@ -309,11 +301,10 @@ export default function AdminClient({
                     className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="0102-xxxx-xx-xxxx" /></div>
                 <div><label className="text-[11px] text-label-tertiary block mb-1">Titular</label>
                   <input type="text" value={cfg.transferencia.titular} onChange={e => setCfg({...cfg, transferencia: {...cfg.transferencia, titular: e.target.value}})}
-                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="Barber Studio" /></div>
+                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="GoClient" /></div>
               </div>
             </div>
 
-            {/* BinancePay */}
             <div className="rounded-2xl border border-[#222] bg-black p-5">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="h-5 w-5 text-brand" />
@@ -322,10 +313,10 @@ export default function AdminClient({
               <div className="grid sm:grid-cols-2 gap-3">
                 <div><label className="text-[11px] text-label-tertiary block mb-1">Correo</label>
                   <input type="text" value={cfg.binancepay.correo} onChange={e => setCfg({...cfg, binancepay: {...cfg.binancepay, correo: e.target.value}})}
-                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="admin@barberstudio.app" /></div>
+                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="admin@goclient.app" /></div>
                 <div><label className="text-[11px] text-label-tertiary block mb-1">ID Usuario</label>
                   <input type="text" value={cfg.binancepay.id_usuario} onChange={e => setCfg({...cfg, binancepay: {...cfg.binancepay, id_usuario: e.target.value}})}
-                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="@barberstudio" /></div>
+                    className="input !h-9 !text-[13px]" disabled={!editingConfig} placeholder="@goclient" /></div>
               </div>
             </div>
 
@@ -352,7 +343,6 @@ export default function AdminClient({
         )}
       </main>
 
-      {/* Reject modal */}
       {rejectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-[#222] bg-base-900 p-6">

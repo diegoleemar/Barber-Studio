@@ -8,7 +8,10 @@ import { Check, Copy } from 'lucide-react';
 const TITLES: Record<PaymentMethod['tipo'], string> = {
   pago_movil: 'Pago Móvil',
   transferencia: 'Transferencia',
-  efectivo: 'Efectivo / Divisas'
+  efectivo: 'Efectivo / Divisas',
+  binance: 'BinancePay',
+  paypal: 'PayPal',
+  zelle: 'Zelle'
 };
 
 export default function PaymentInfoCard({ method }: { method: PaymentMethod }) {
@@ -32,14 +35,14 @@ export default function PaymentInfoCard({ method }: { method: PaymentMethod }) {
   };
 
   return (
-    <div className="rounded-2xl border border-[#222] bg-black p-5">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3 pb-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
           <PaymentIcon tipo={method.tipo} className="h-5 w-5" />
         </span>
         <h4 className="text-[15px] font-semibold text-label-primary">{TITLES[method.tipo]}</h4>
       </div>
-      <div className="mb-2 h-px bg-[#222]" />
+      <div className="mb-2 h-px bg-gray-100" />
       {fields.map(([k, v], i) => (
         <div key={k}>
           <button onClick={() => copy(k, v)}
@@ -54,7 +57,7 @@ export default function PaymentInfoCard({ method }: { method: PaymentMethod }) {
               )}
             </span>
           </button>
-          {i < fields.length - 1 && <div className="h-px bg-[#222]" />}
+          {i < fields.length - 1 && <div className="h-px bg-gray-100" />}
         </div>
       ))}
     </div>

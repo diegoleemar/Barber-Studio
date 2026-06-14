@@ -12,14 +12,14 @@ export default async function AdminPage() {
 
   const supabase = createAdminClient();
 
-  const { data: barbers } = await supabase
-    .from('barbers')
-    .select('*')
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('*, profession:professions(*)')
     .order('created_at', { ascending: false });
 
   const { data: requests } = await supabase
     .from('payment_requests')
-    .select('*')
+    .select('*, profile:profiles(*)')
     .order('created_at', { ascending: false });
 
   const { data: config } = await supabase
@@ -29,7 +29,7 @@ export default async function AdminPage() {
 
   return (
     <AdminClient
-      barbers={barbers || []}
+      profiles={profiles || []}
       requests={requests || []}
       config={config}
     />

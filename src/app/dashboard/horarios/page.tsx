@@ -1,37 +1,31 @@
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import HorariosClient from './HorariosClient';
+import { LockedFeature } from '@/components/LockedFeature';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HorariosPage() {
   const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  const { data: barber } = await supabase
-    .from('barbers')
-    .select('id')
-    .eq('user_id', user!.id)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, subscription_status')
+    .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!barber) return null;
+  if (!profile) redirect('/onboarding');
+
+  if (profile.subscription_status !== 'active') {
+    return <LockedFeature title="Horarios" desc="Activa tu suscripción para configurar tus horarios de atención." />;
+  }
 
   const [{ data: schedules }, { data: blocked }] = await Promise.all([
-    supabase.from('schedules').select('*').eq('barber_id', barber.id),
-    supabase
-      .from('blocked_slots')
-      .select('*')
-      .eq('barber_id', barber.id)
-      .gte('fecha', new Date().toISOString().split('T')[0])
-      .order('fecha')
+    supabase.from('schedules').select('*').eq('profile_id', profile.id),
+    supabase.from('blocked_slots').select('*').eq('profile_id', profile.id).gte('fecha', new Date().toISOString().split('T')[0]).order('fecha'),
   ]);
 
-  return (
-    <HorariosClient
-      barberId={barber.id}
-      initialSchedules={schedules || []}
-      initialBlocked={blocked || []}
-    />
-  );
+  return <HorariosClient profileId={profile.id} initialSchedules={schedules || []} initialBlocked={blocked || []} />;
 }

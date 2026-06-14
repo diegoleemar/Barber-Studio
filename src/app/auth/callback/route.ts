@@ -19,23 +19,23 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: barber } = await supabase
-          .from('barbers')
+        const { data: profile } = await supabase
+          .from('profiles')
           .select('id, subscription_status')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!barber) {
+        if (!profile) {
           return NextResponse.redirect(`${origin}/onboarding`);
         }
 
         // Auto-activar cuenta demo
         const email = (user.email || user.user_metadata?.email || '').toLowerCase();
-        if (ADMIN_EMAILS.includes(email) && barber.subscription_status !== 'active') {
+        if (ADMIN_EMAILS.includes(email) && profile.subscription_status !== 'active') {
           await supabase
-            .from('barbers')
-            .update({ subscription_status: 'active', subscription_plan: 'barberia' })
-            .eq('id', barber.id);
+            .from('profiles')
+            .update({ subscription_status: 'active', subscription_plan: 'business' })
+            .eq('id', profile.id);
         }
 
         return NextResponse.redirect(`${origin}${next}`);

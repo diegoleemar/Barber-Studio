@@ -9,13 +9,13 @@ export default async function PerfilPage() {
     data: { user }
   } = await supabase.auth.getUser();
 
-  const { data: barber } = await supabase
-    .from('barbers')
-    .select('*')
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*, profession:professions(*)')
     .eq('user_id', user!.id)
     .maybeSingle();
 
-  if (!barber) return null;
+  if (!profile) return null;
 
-  return <PerfilForm barber={barber} />;
+  return <PerfilForm profile={profile} />;
 }

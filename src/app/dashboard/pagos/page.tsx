@@ -1,27 +1,31 @@
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import PagosClient from './PagosClient';
+import { LockedFeature } from '@/components/LockedFeature';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PagosPage() {
   const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  const { data: barber } = await supabase
-    .from('barbers')
-    .select('id')
-    .eq('user_id', user!.id)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, subscription_status')
+    .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!barber) return null;
+  if (!profile) redirect('/onboarding');
 
-  const { data: methods } = await supabase
+  if (profile.subscription_status !== 'active') {
+    return <LockedFeature title="Métodos de pago" desc="Activa tu suscripción para configurar tus métodos de pago." />;
+  }
+
+  const { data: payments } = await supabase
     .from('payment_methods')
     .select('*')
-    .eq('barber_id', barber.id)
-    .order('created_at');
+    .eq('profile_id', profile.id);
 
-  return <PagosClient barberId={barber.id} initial={methods || []} />;
+  return <PagosClient profileId={profile.id} initial={payments || []} />;
 }
